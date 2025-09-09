@@ -20,6 +20,8 @@ public class SessionAccountHelper implements AccountHelper {
     public void join(AccountJoinRequest joinReq) {
         memberService.save(joinReq.getName(), joinReq.getLoginId(), joinReq.getLoginPw());
     }
+
+    // 로그인 실행
     @Override
     public String login(AccountLoginRequest loginReq, HttpServletRequest req, HttpServletResponse res) {
         Member member = memberService.find(loginReq.getLoginId(), loginReq.getLoginPw());
@@ -29,10 +31,13 @@ public class SessionAccountHelper implements AccountHelper {
         HttpUtils.setSession(req, AccountConstraints.MEMBER_ID_NAME, member.getId());
         return member.getLoginId();
     }
+
+    // 로그인 여부 확인
     @Override
     public Integer getMemberId(HttpServletRequest req) {
         Object memberId = HttpUtils.getSessionValue(req, AccountConstraints.MEMBER_ID_NAME);
-        if(memberId == null) {
+        // memberId 존재유무로 로그인 여부확인
+        if(memberId != null) {
             return (int)memberId;
         }
         return null;
@@ -41,6 +46,9 @@ public class SessionAccountHelper implements AccountHelper {
     public boolean isLoggedIn(HttpServletRequest req) {
         return getMemberId(req) != null;
     }
+
+
+    // 로그아웃
     @Override
     public void logout(HttpServletRequest req, HttpServletResponse res) {
         HttpUtils.removeSession(req, AccountConstraints.MEMBER_ID_NAME);
